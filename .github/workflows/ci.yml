@@ -1,0 +1,262 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  # Test on Linux with GCC and Clang
+  test-linux:
+    name: Linux (${{ matrix.compiler }}, ${{ matrix.build_type }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+        build_type: [Debug, Release]
+        include:
+          - compiler: gcc
+            cc: gcc
+            cxx: g++
+          - compiler: clang
+            cc: clang
+            cxx: clang++
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential gcc clang valgrind lcov
+
+    - name: Configure CMake
+      env:
+        CC: ${{ matrix.cc }}
+        CXX: ${{ matrix.cxx }}
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DSTRIDER_BUILD_TESTS=ON \
+          -DSTRIDER_BUILD_EXAMPLES=ON
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} -j $(nproc)
+
+    - name: Run tests
+      working-directory: build
+      run: ctest --output-on-failure --build-config ${{ matrix.build_type }}
+
+    - name: Run example
+      working-directory: build
+      run: ./examples/cpu_info
+
+  # Test on Linux with sanitizers (GCC only for now)
+  test-sanitizers:
+    name: Linux (Sanitizers)
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential gcc
+
+    - name: Configure with AddressSanitizer
+      env:
+        CC: gcc
+        CXX: g++
+      run: |
+        cmake -B build-asan \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DSTRIDER_BUILD_TESTS=ON \
+          -DSTRIDER_ENABLE_ASAN=ON
+
+    - name: Build with ASan
+      run: cmake --build build-asan -j $(nproc)
+
+    - name: Run tests with ASan
+      working-directory: build-asan
+      run: ctest --output-on-failure
+
+    - name: Configure with UndefinedBehaviorSanitizer
+      env:
+        CC: gcc
+        CXX: g++
+      run: |
+        cmake -B build-ubsan \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DSTRIDER_BUILD_TESTS=ON \
+          -DSTRIDER_ENABLE_UBSAN=ON
+
+    - name: Build with UBSan
+      run: cmake --build build-ubsan -j $(nproc)
+
+    - name: Run tests with UBSan
+      working-directory: build-ubsan
+      run: ctest --output-on-failure
+
+  # Test on macOS (ARM64 and x86_64)
+  test-macos:
+    name: macOS (${{ matrix.arch }}, ${{ matrix.build_type }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Apple Silicon (ARM64)
+          - os: macos-14
+            arch: arm64
+            build_type: Release
+          # Intel (x86_64)
+          - os: macos-13
+            arch: x86_64
+            build_type: Release
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: brew install cmake
+
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DSTRIDER_BUILD_TESTS=ON \
+          -DSTRIDER_BUILD_EXAMPLES=ON
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} -j $(sysctl -n hw.ncpu)
+
+    - name: Run tests
+      working-directory: build
+      run: ctest --output-on-failure --build-config ${{ matrix.build_type }}
+
+    - name: Run example
+      working-directory: build
+      run: ./examples/cpu_info
+
+  # Test coverage report (Linux GCC Debug only)
+  test-coverage:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential gcc lcov
+
+    - name: Configure with coverage
+      env:
+        CC: gcc
+        CXX: g++
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DSTRIDER_BUILD_TESTS=ON \
+          -DCMAKE_C_FLAGS="--coverage -fprofile-arcs -ftest-coverage"
+
+    - name: Build
+      run: cmake --build build -j $(nproc)
+
+    - name: Run tests
+      working-directory: build
+      run: ctest --output-on-failure
+
+    - name: Generate coverage report
+      run: |
+        lcov --capture --directory build --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' '*/tests/*' '*/unity/*' --output-file coverage.info
+        lcov --list coverage.info
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./coverage.info
+        fail_ci_if_error: false
+        verbose: true
+
+  # Check code formatting and style
+  check-format:
+    name: Code Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check for trailing whitespace
+      run: |
+        if grep -r --include="*.c" --include="*.h" '[[:space:]]$' .; then
+          echo "Found trailing whitespace"
+          exit 1
+        fi
+
+    - name: Check for tabs (should use spaces)
+      run: |
+        # Allow tabs in Makefiles and specific files, but not in source
+        if grep -r --include="*.c" --include="*.h" $'\t' . | grep -v "Makefile"; then
+          echo "Found tabs in source files (use spaces)"
+          exit 1
+        fi
+      continue-on-error: true  # Make this a warning for now
+
+  # Build and test on Windows with MSVC
+  test-windows:
+    name: Windows (MSVC, ${{ matrix.build_type }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Configure CMake
+      run: |
+        cmake -B build `
+          -G "Visual Studio 17 2022" `
+          -A x64 `
+          -DSTRIDER_BUILD_TESTS=ON `
+          -DSTRIDER_BUILD_EXAMPLES=ON
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }}
+
+    - name: Run tests
+      working-directory: build
+      run: ctest -C ${{ matrix.build_type }} --output-on-failure
+
+    - name: Run example
+      working-directory: build/examples/${{ matrix.build_type }}
+      run: ./cpu_info.exe
+
+  # Summary job that depends on all other jobs
+  ci-success:
+    name: CI Success
+    needs: [test-linux, test-sanitizers, test-macos, test-coverage, check-format, test-windows]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Check all jobs
+      run: |
+        if [[ "${{ needs.test-linux.result }}" != "success" ]] || \
+           [[ "${{ needs.test-sanitizers.result }}" != "success" ]] || \
+           [[ "${{ needs.test-macos.result }}" != "success" ]] || \
+           [[ "${{ needs.test-windows.result }}" != "success" ]]; then
+          echo "One or more required jobs failed"
+          exit 1
+        fi
+        echo "All required CI jobs passed!"

@@ -4,11 +4,12 @@ High-performance string log processing via SIMD abstraction.
 
 ## Project Status
 
-🚧 **Under Development** - TDD Phase 1: Foundation
+🚧 **Under Development** - TDD Phase 1: Foundation ✅ Complete
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
+[![CI](https://github.com/USERNAME/strider-dev/workflows/CI/badge.svg)](https://github.com/USERNAME/strider-dev/actions)
 [![Tests](https://img.shields.io/badge/tests-41%2F41%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)]()
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 ## Overview
 
@@ -50,6 +51,22 @@ cmake --build .
 cd build
 ctest --output-on-failure
 ```
+
+### CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration across multiple platforms:
+
+**Test Matrix:**
+- **Linux**: GCC & Clang (Debug & Release)
+- **macOS**: Apple Silicon (ARM64) & Intel (x86_64)
+- **Windows**: MSVC (Debug & Release)
+- **Sanitizers**: AddressSanitizer & UndefinedBehaviorSanitizer
+- **Coverage**: Code coverage reporting via Codecov
+
+All tests must pass on all platforms before merging. The CI runs automatically on:
+- Every push to `main` or `develop`
+- Every pull request
+- Manual workflow dispatch
 
 ## Development Approach
 

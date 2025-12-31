@@ -68,6 +68,7 @@ cmake-build-*/
 # Test outputs
 *.log
 *.xml
+Testing/
 
 # Coverage
 *.gcov
