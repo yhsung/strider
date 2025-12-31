@@ -1,10 +1,77 @@
-# Setting Up Coverage Badge
+# Setting Up Dynamic Coverage Badge
 
-This document explains how to set up a dynamic coverage badge for the Strider project.
+This document explains how to set up a dynamic coverage badge for the Strider project. The workflow is **already configured** - you just need to set up the badge endpoint!
 
-## Option 1: Codecov Badge (Recommended)
+## Quick Start (Recommended)
 
-Codecov provides automatic coverage badges and detailed reports.
+Follow these steps to get a dynamic coverage badge in **under 5 minutes**:
+
+### Step 1: Create a GitHub Gist
+
+1. Go to https://gist.github.com
+2. Click "Create new gist"
+3. Set filename: `coverage-badge.json`
+4. Paste this content:
+   ```json
+   {
+     "schemaVersion": 1,
+     "label": "coverage",
+     "message": "100%",
+     "color": "brightgreen"
+   }
+   ```
+5. Click "Create public gist"
+6. **Copy the Gist ID** from the URL (e.g., `https://gist.github.com/username/abc123def456` → `abc123def456`)
+
+### Step 2: Create GitHub Personal Access Token
+
+1. Go to https://github.com/settings/tokens
+2. Click "Generate new token (classic)"
+3. Give it a name: `Strider Coverage Badge`
+4. Select scope: **only check `gist`** (write access to gists)
+5. Click "Generate token"
+6. **Copy the token** (you won't see it again!)
+
+### Step 3: Add Secrets to Repository
+
+1. Go to your repository: https://github.com/yhsung/strider
+2. Click **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret** twice to add:
+   - Name: `GIST_TOKEN`, Value: (paste your token from step 2)
+   - Name: `GIST_ID`, Value: (paste your gist ID from step 1)
+
+### Step 4: Update README Badge
+
+Replace the current coverage badge line in `README.md`:
+
+**Current (static):**
+```markdown
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)]()
+```
+
+**New (dynamic):**
+```markdown
+[![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yhsung/YOUR_GIST_ID/raw/coverage-badge.json)](https://github.com/yhsung/strider/actions/workflows/ci.yml)
+```
+
+Replace `YOUR_GIST_ID` with your actual Gist ID from step 1.
+
+### Step 5: Push and Verify
+
+1. Commit the README change
+2. Push to `main` branch
+3. Wait for CI to complete
+4. Refresh your repository page - the badge should now be dynamic! 🎉
+
+The badge will automatically update on every push to `main` with:
+- ✅ Current coverage percentage
+- ✅ Color coding (green ≥90%, yellow ≥60%, red <60%)
+
+---
+
+## Alternative: Codecov Badge
+
+If you prefer a full-featured coverage service with reports and graphs:
 
 ### Setup Steps:
 
@@ -35,75 +102,56 @@ Codecov provides automatic coverage badges and detailed reports.
 - ✅ Coverage trends over time
 - ✅ PR comments with coverage changes
 
-## Option 2: Shields.io Dynamic Badge
+---
 
-Use shields.io with endpoint functionality for a self-hosted badge.
+## How It Works
 
-### Setup Steps:
+The CI workflow automatically:
 
-1. **Create a GitHub Gist**
-   - Go to [gist.github.com](https://gist.github.com)
-   - Create a new gist named `strider-coverage.json` with content:
-   ```json
-   {
-     "schemaVersion": 1,
-     "label": "coverage",
-     "message": "100%",
-     "color": "brightgreen"
-   }
-   ```
-   - Make it public
-   - Copy the Gist ID from the URL
+1. **Runs tests** with coverage instrumentation
+2. **Generates coverage report** using lcov
+3. **Extracts coverage percentage** from the report
+4. **Creates badge JSON** with appropriate color:
+   - 🟢 Green (≥90%)
+   - 🟢 Light green (≥75%)
+   - 🟡 Yellow (≥60%)
+   - 🔴 Red (<60%)
+5. **Updates your Gist** with the new coverage data (on pushes to `main`)
+6. **shields.io reads the Gist** and displays it as a badge
 
-2. **Create GitHub Token**
-   - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
-   - Generate new token with `gist` scope
-   - Copy the token
+## Troubleshooting
 
-3. **Add Secrets to Repository**
-   - Go to: Repository Settings → Secrets and variables → Actions
-   - Add two secrets:
-     - `GIST_SECRET`: Your GitHub personal access token
-     - `GIST_ID`: Your Gist ID
+### Badge not updating?
 
-4. **Uncomment Badge Action**
-   - In `.github/workflows/ci.yml`, the badge action is already configured
-   - It will automatically update the gist with coverage percentage
+1. **Check secrets are set correctly**
+   - Go to Repository Settings → Secrets and variables → Actions
+   - Verify both `GIST_TOKEN` and `GIST_ID` exist
 
-5. **Update README Badge**
+2. **Check CI workflow completed**
+   - Go to Actions tab in your repository
+   - Ensure the "Coverage Report" job succeeded
+   - Look for the "Update coverage badge gist" step
+
+3. **Check Gist was updated**
+   - Visit your Gist URL
+   - Verify it shows the latest coverage percentage
+
+4. **Clear badge cache**
+   - shields.io caches badges for performance
+   - Add `?cache=300` to your badge URL to reduce cache time:
    ```markdown
-   [![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/strider-coverage.json)](https://github.com/yhsung/strider/actions/workflows/ci.yml)
+   [![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yhsung/GIST_ID/raw/coverage-badge.json&cache=300)](https://github.com/yhsung/strider/actions/workflows/ci.yml)
    ```
-   - Replace `USERNAME` with your GitHub username
-   - Replace `GIST_ID` with your gist ID
 
-### What You Get:
-- ✅ Dynamic badge that updates on CI runs
-- ✅ No external service dependency (besides GitHub)
-- ✅ Full control over badge appearance
+### Permission denied when updating Gist?
 
-## Option 3: Static Badge (Current)
+- Ensure your Personal Access Token has the `gist` scope
+- Regenerate the token if needed
+- Update the `GIST_TOKEN` secret
 
-The current approach uses a static badge that must be manually updated.
+## View Coverage Locally
 
-**Pros:**
-- ✅ No setup required
-- ✅ Works immediately
-
-**Cons:**
-- ❌ Must be manually updated when coverage changes
-- ❌ No historical tracking
-
-## Current Coverage Reporting
-
-The CI workflow already:
-- ✅ Generates coverage reports using lcov
-- ✅ Excludes test files and system headers
-- ✅ Displays coverage summary in GitHub Actions output
-- ✅ Uploads to Codecov (if configured)
-- ✅ Shows coverage in GitHub Actions summary
-
-### View Coverage Locally:
+Generate coverage reports on your development machine:
 
 ```bash
 # Build with coverage
@@ -123,10 +171,15 @@ genhtml coverage.info --output-directory coverage_html
 # Open coverage_html/index.html in browser
 ```
 
-## Recommended Approach
+## Summary
 
-**For open-source projects:** Use **Option 1 (Codecov)** for the best experience with minimal setup.
+The **Quick Start** approach (Gist + shields.io) gives you:
+- ✅ **5-minute setup** - Just create a Gist and add 2 secrets
+- ✅ **Automatic updates** - Badge updates on every push to `main`
+- ✅ **No external service** - Uses only GitHub infrastructure
+- ✅ **Color coding** - Visual indication of coverage health
+- ✅ **Already configured** - Workflow is ready to go!
 
-**For private projects or maximum control:** Use **Option 2 (Shields.io with Gist)**.
+**Alternative:** Codecov provides richer features (trends, PR comments, line-by-line coverage) if you need detailed analysis.
 
-Both options provide automatic updates and are already integrated into the CI workflow!
+Both options are integrated into the CI workflow and work automatically once configured!
