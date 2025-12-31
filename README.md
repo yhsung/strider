@@ -8,7 +8,7 @@ High-performance string log processing via SIMD abstraction.
 
 [![CI](https://github.com/yhsung/strider/workflows/CI/badge.svg)](https://github.com/yhsung/strider/actions)
 [![Tests](https://img.shields.io/badge/tests-54%2F54%20passing-brightgreen)]()
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)]()
+[![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yhsung/YOUR_GIST_ID/raw/coverage-badge.json)](https://github.com/yhsung/strider/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 ## Overview
