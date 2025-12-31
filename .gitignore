@@ -53,3 +53,34 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Build directories
+build/
+cmake-build-*/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test outputs
+*.log
+*.xml
+
+# Coverage
+*.gcov
+*.gcda
+*.gcno
+coverage/
+*.profdata
+*.profraw
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.bak
