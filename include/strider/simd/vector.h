@@ -271,6 +271,191 @@ static inline strider_vec256_t strider_vec256_zero(void) {
 #endif /* AVX2 */
 
 /* ========================================================================
+ * Comparison Operations (128-bit)
+ * ======================================================================== */
+
+/**
+ * @brief Element-wise equality comparison
+ *
+ * @param a First vector
+ * @param b Second vector
+ * @return Vector with 0xFF for equal bytes, 0x00 for different bytes
+ *
+ * @note Result can be used with movemask to extract comparison results
+ */
+static inline strider_vec128_t strider_vec128_cmpeq(strider_vec128_t a, strider_vec128_t b) {
+    strider_vec128_t result;
+    #if defined(STRIDER_ARCH_X86_64)
+        result.data = _mm_cmpeq_epi8(a.data, b.data);
+    #elif defined(STRIDER_ARCH_ARM64)
+        result.data = vceqq_u8(a.data, b.data);
+    #else
+        for (int i = 0; i < 16; i++) {
+            result.data[i] = (a.data[i] == b.data[i]) ? 0xFF : 0x00;
+        }
+    #endif
+    return result;
+}
+
+/**
+ * @brief Extract sign bit mask from vector bytes
+ *
+ * @param vec Input vector
+ * @return 16-bit mask where bit i = sign bit of byte i
+ *
+ * @note Used with cmpeq to find matching bytes
+ * @note On ARM, extracts MSB of each byte to build mask
+ */
+static inline uint32_t strider_vec128_movemask(strider_vec128_t vec) {
+    #if defined(STRIDER_ARCH_X86_64)
+        return (uint32_t)_mm_movemask_epi8(vec.data);
+    #elif defined(STRIDER_ARCH_ARM64)
+        /* ARM NEON: Extract MSB from each byte and pack into mask
+         * Strategy: Narrow and shift to pack 16 MSBs into 16 bits */
+
+        /* Shift each byte right by 7 to get MSB in bit 0 */
+        uint8x16_t shifted = vshrq_n_u8(vec.data, 7);
+
+        /* Now each byte is either 0x00 or 0x01 */
+        /* Pack pairs of bytes into nibbles using shifts */
+        uint8x16_t mask_0 = shifted;
+        uint8x16_t mask_1 = vshlq_n_u8(shifted, 1);
+        uint8x16_t mask_2 = vshlq_n_u8(shifted, 2);
+        uint8x16_t mask_3 = vshlq_n_u8(shifted, 3);
+        uint8x16_t mask_4 = vshlq_n_u8(shifted, 4);
+        uint8x16_t mask_5 = vshlq_n_u8(shifted, 5);
+        uint8x16_t mask_6 = vshlq_n_u8(shifted, 6);
+        uint8x16_t mask_7 = vshlq_n_u8(shifted, 7);
+
+        /* Combine adjacent pairs */
+        uint8x16_t pair0 = vorrq_u8(mask_0, mask_1);
+        uint8x16_t pair1 = vorrq_u8(mask_2, mask_3);
+        uint8x16_t pair2 = vorrq_u8(mask_4, mask_5);
+        uint8x16_t pair3 = vorrq_u8(mask_6, mask_7);
+
+        /* Extract bytes and build mask manually */
+        uint8_t bytes[16];
+        vst1q_u8(bytes, shifted);
+
+        uint32_t mask = 0;
+        for (int i = 0; i < 16; i++) {
+            mask |= (bytes[i] & 1) << i;
+        }
+
+        return mask;
+    #else
+        /* Scalar fallback */
+        uint32_t mask = 0;
+        for (int i = 0; i < 16; i++) {
+            if (vec.data[i] & 0x80) {
+                mask |= (1U << i);
+            }
+        }
+        return mask;
+    #endif
+}
+
+/* ========================================================================
+ * Comparison Operations (256-bit)
+ * ======================================================================== */
+
+#if defined(STRIDER_HAS_AVX2) || !defined(STRIDER_ARCH_X86_64)
+
+static inline strider_vec256_t strider_vec256_cmpeq(strider_vec256_t a, strider_vec256_t b) {
+    strider_vec256_t result;
+    #if defined(STRIDER_HAS_AVX2)
+        result.data = _mm256_cmpeq_epi8(a.data, b.data);
+    #elif defined(STRIDER_ARCH_ARM64)
+        result.data[0] = vceqq_u8(a.data[0], b.data[0]);
+        result.data[1] = vceqq_u8(a.data[1], b.data[1]);
+    #else
+        for (int i = 0; i < 32; i++) {
+            result.data[i] = (a.data[i] == b.data[i]) ? 0xFF : 0x00;
+        }
+    #endif
+    return result;
+}
+
+static inline uint32_t strider_vec256_movemask(strider_vec256_t vec) {
+    #if defined(STRIDER_HAS_AVX2)
+        return (uint32_t)_mm256_movemask_epi8(vec.data);
+    #elif defined(STRIDER_ARCH_ARM64)
+        /* Process two 128-bit halves separately */
+        strider_vec128_t lo, hi;
+        lo.data = vec.data[0];
+        hi.data = vec.data[1];
+        uint32_t lo_mask = strider_vec128_movemask(lo);
+        uint32_t hi_mask = strider_vec128_movemask(hi);
+        return lo_mask | (hi_mask << 16);
+    #else
+        uint32_t mask = 0;
+        for (int i = 0; i < 32; i++) {
+            if (vec.data[i] & 0x80) {
+                mask |= (1U << i);
+            }
+        }
+        return mask;
+    #endif
+}
+
+#endif /* STRIDER_HAS_AVX2 */
+
+/* ========================================================================
+ * Bit Manipulation Utilities
+ * ======================================================================== */
+
+/**
+ * @brief Count trailing zeros (find position of first set bit)
+ *
+ * @param x Input value
+ * @return Number of trailing zero bits (0-31), or 32 if x is 0
+ *
+ * @note Used to find first match in movemask result
+ */
+static inline int strider_ctz32(uint32_t x) {
+    if (x == 0) return 32;
+
+    #if defined(__GNUC__) || defined(__clang__)
+        return __builtin_ctz(x);
+    #elif defined(_MSC_VER)
+        unsigned long index;
+        _BitScanForward(&index, x);
+        return (int)index;
+    #else
+        /* Portable fallback using De Bruijn sequence */
+        static const int debruijn32[32] = {
+            0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
+            31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
+        };
+        return debruijn32[((x & -x) * 0x077CB531U) >> 27];
+    #endif
+}
+
+/**
+ * @brief Count number of set bits (population count)
+ *
+ * @param x Input value
+ * @return Number of 1 bits in x
+ *
+ * @note Used to count total matches in a vector
+ */
+static inline int strider_popcount32(uint32_t x) {
+    #if defined(__GNUC__) || defined(__clang__)
+        return __builtin_popcount(x);
+    #elif defined(_MSC_VER) && defined(_M_X64)
+        return (int)__popcnt(x);
+    #else
+        /* Portable fallback - Brian Kernighan's algorithm */
+        int count = 0;
+        while (x) {
+            x &= x - 1;  /* Clear lowest set bit */
+            count++;
+        }
+        return count;
+    #endif
+}
+
+/* ========================================================================
  * Utility Functions
  * ======================================================================== */
 

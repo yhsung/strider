@@ -30,3 +30,6 @@ add_strider_test(test_simd_detection test_simd_detection.c)
 
 # TDD Cycle 3: Core vector abstraction - load/store
 add_strider_test(test_vector_ops test_vector_ops.c)
+
+# TDD Cycle 4: Vector comparison operations
+add_strider_test(test_vector_compare test_vector_compare.c)

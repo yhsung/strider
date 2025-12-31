@@ -7,7 +7,7 @@ High-performance string log processing via SIMD abstraction.
 🚧 **Under Development** - TDD Phase 1: Foundation
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Tests](https://img.shields.io/badge/tests-20%2F20%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-29%2F29%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)]()
 
 ## Overview
@@ -83,7 +83,13 @@ See [DEVELOPMENT_PLAN.md](docs/plans/DEVELOPMENT_PLAN.md) for the complete 12-we
   - [x] Set1 (broadcast) and zero operations
   - [x] Alignment helper utilities
   - [x] 10 additional tests passing (20 total)
-- [ ] TDD Cycle 4: Vector Comparison Operations
+- [x] TDD Cycle 4: Vector Comparison Operations
+  - [x] Element-wise equality comparison (cmpeq)
+  - [x] Extract bitmask from comparison results (movemask)
+  - [x] Byte search operations (strchr-like)
+  - [x] Bit manipulation utilities (ctz, popcount)
+  - [x] Both 128-bit and 256-bit variants
+  - [x] 9 additional tests passing (29 total)
 - [ ] TDD Cycle 5: Memory Utilities
 
 ## Project Structure
