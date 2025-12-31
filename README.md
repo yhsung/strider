@@ -6,7 +6,7 @@ High-performance string log processing via SIMD abstraction.
 
 🚧 **Under Development** - TDD Phase 1: Foundation ✅ Complete
 
-[![CI](https://github.com/USERNAME/strider-dev/workflows/CI/badge.svg)](https://github.com/USERNAME/strider-dev/actions)
+[![CI](https://github.com/yhsung/strider/workflows/CI/badge.svg)](https://github.com/yhsung/strider/actions)
 [![Tests](https://img.shields.io/badge/tests-41%2F41%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)]()
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
