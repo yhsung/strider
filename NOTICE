@@ -1,0 +1,26 @@
+Strider - High-Performance SIMD String Processing Library
+Copyright 2025 Strider Development Team
+
+This product includes software developed by the Strider project.
+
+===============================================================================
+
+This product includes the Unity Test Framework, which is available under
+the MIT License:
+
+  Unity Test Framework
+  Copyright (c) 2007-25 Mike Karlesky, Mark VanderVoord, & Greg Williams
+  https://github.com/ThrowTheSwitch/Unity
+  License: MIT (SPDX-License-Identifier: MIT)
+
+  The Unity Test Framework is used for testing only and is not distributed
+  as part of the Strider library binaries.
+
+===============================================================================
+
+This product uses platform-specific SIMD intrinsics:
+  - x86_64: Intel/AMD intrinsics (SSE2, AVX2, AVX-512)
+  - ARM64: ARM NEON intrinsics
+
+These are standard compiler built-in functions provided by GCC, Clang, and
+MSVC, and do not impose licensing restrictions.

@@ -2,6 +2,9 @@
  * @file config.c
  * @brief CPU feature detection implementation
  *
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2025 Strider Development Team
+ *
  * Runtime detection of SIMD capabilities using:
  * - CPUID on x86_64
  * - getauxval/sysctlbyname on ARM64

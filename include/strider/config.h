@@ -2,6 +2,9 @@
  * @file config.h
  * @brief Strider configuration and CPU feature detection
  *
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2025 Strider Development Team
+ *
  * Provides compile-time and runtime detection of SIMD capabilities
  * across x86_64 (SSE2/AVX2/AVX-512) and ARM64 (NEON) architectures.
  *

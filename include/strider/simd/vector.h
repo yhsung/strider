@@ -2,6 +2,9 @@
  * @file vector.h
  * @brief SIMD vector abstraction layer
  *
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2025 Strider Development Team
+ *
  * Provides a unified interface for SIMD operations across:
  * - x86_64: SSE2 (128-bit), AVX2 (256-bit), AVX-512 (512-bit)
  * - ARM64: NEON (128-bit), SVE (scalable)
