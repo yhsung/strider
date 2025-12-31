@@ -410,7 +410,6 @@ jobs:
       with:
         pattern: test-counts-*
         path: test_counts
-        merge-multiple: true
 
     - name: Aggregate Test Counts
       id: aggregate
