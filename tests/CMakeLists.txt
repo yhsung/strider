@@ -39,3 +39,6 @@ add_strider_test(test_memory_utils test_memory_utils.c)
 
 # TDD Cycle 6: Single character search
 add_strider_test(test_strchr test_strchr.c)
+
+# TDD Cycle 7: Newline detection
+add_strider_test(test_newline test_newline.c)

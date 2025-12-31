@@ -40,6 +40,7 @@ endif()
 add_library(strider
     src/config.c
     src/parsers/strchr.c
+    src/parsers/newline.c
 )
 target_include_directories(strider PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
