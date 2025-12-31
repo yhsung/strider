@@ -166,12 +166,23 @@ jobs:
         lcov --remove coverage.info '/usr/*' '*/tests/*' --output-file coverage.info --ignore-errors unused
         lcov --list coverage.info
 
+    - name: Extract coverage percentage
+      id: coverage
+      run: |
+        COVERAGE=$(lcov --summary coverage.info 2>&1 | grep "lines" | awk '{print $2}' | sed 's/%//')
+        echo "percentage=$COVERAGE" >> $GITHUB_OUTPUT
+        echo "### Coverage Report" >> $GITHUB_STEP_SUMMARY
+        echo "**Line Coverage: $COVERAGE%**" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        lcov --list coverage.info >> $GITHUB_STEP_SUMMARY
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
         files: ./coverage.info
         fail_ci_if_error: false
         verbose: true
+      continue-on-error: true
 
   # Check code formatting and style
   check-format:

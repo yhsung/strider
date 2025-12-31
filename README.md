@@ -58,15 +58,18 @@ The project uses GitHub Actions for continuous integration across multiple platf
 
 **Test Matrix:**
 - **Linux**: GCC & Clang (Debug & Release)
-- **macOS**: Apple Silicon (ARM64) & Intel (x86_64)
+- **macOS**: Apple Silicon ARM64
 - **Windows**: MSVC (Debug & Release)
 - **Sanitizers**: AddressSanitizer & UndefinedBehaviorSanitizer
-- **Coverage**: Code coverage reporting via Codecov
+- **Coverage**: Line coverage tracking with lcov
 
 All tests must pass on all platforms before merging. The CI runs automatically on:
 - Every push to `main` or `develop`
 - Every pull request
 - Manual workflow dispatch
+
+**Coverage Reporting:**
+The coverage badge can be made dynamic using Codecov or shields.io. See [docs/COVERAGE_BADGE.md](docs/COVERAGE_BADGE.md) for setup instructions.
 
 ## Development Approach
 
