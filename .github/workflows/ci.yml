@@ -97,7 +97,7 @@ jobs:
       uses: exuanbo/actions-deploy-gist@v1
       with:
         token: ${{ secrets.GIST_TOKEN }}
-        gist_id: ${{ secrets.GIST_ID }}
+        gist_id: ${{ secrets.GIST_TEST_BADGE_ID }}
         file_path: test-badge.json
         file_type: text
       continue-on-error: true
