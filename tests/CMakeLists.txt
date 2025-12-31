@@ -27,3 +27,6 @@ add_strider_test(test_build test_build.c)
 
 # TDD Cycle 2: SIMD feature detection
 add_strider_test(test_simd_detection test_simd_detection.c)
+
+# TDD Cycle 3: Core vector abstraction - load/store
+add_strider_test(test_vector_ops test_vector_ops.c)
