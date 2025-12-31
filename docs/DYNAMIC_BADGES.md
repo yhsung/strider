@@ -1,17 +1,34 @@
-# Setting Up Dynamic Coverage Badge
+# Setting Up Dynamic Badges (Tests & Coverage)
 
-This document explains how to set up a dynamic coverage badge for the Strider project. The workflow is **already configured** - you just need to set up the badge endpoint!
+This document explains how to set up dynamic badges for the Strider project. The CI workflow is **already configured** to generate both test results and coverage badges - you just need to set up the badge endpoint!
+
+## What You Get
+
+Two automatically updating badges:
+- **Tests Badge**: Shows "X/Y passing" based on actual CI test results
+- **Coverage Badge**: Shows line coverage percentage with color coding
 
 ## Quick Start (Recommended)
 
-Follow these steps to get a dynamic coverage badge in **under 5 minutes**:
+Follow these steps to get both dynamic badges in **under 5 minutes**:
 
 ### Step 1: Create a GitHub Gist
 
 1. Go to https://gist.github.com
 2. Click "Create new gist"
-3. Set filename: `coverage-badge.json`
-4. Paste this content:
+3. Add **TWO files** to the gist:
+
+   **File 1:** `test-badge.json`
+   ```json
+   {
+     "schemaVersion": 1,
+     "label": "tests",
+     "message": "68/68 passing",
+     "color": "brightgreen"
+   }
+   ```
+
+   **File 2:** `coverage-badge.json`
    ```json
    {
      "schemaVersion": 1,
@@ -20,8 +37,9 @@ Follow these steps to get a dynamic coverage badge in **under 5 minutes**:
      "color": "brightgreen"
    }
    ```
-5. Click "Create public gist"
-6. **Copy the Gist ID** from the URL (e.g., `https://gist.github.com/username/abc123def456` → `abc123def456`)
+
+4. Click "Create public gist"
+5. **Copy the Gist ID** from the URL (e.g., `https://gist.github.com/username/abc123def456` → `abc123def456`)
 
 ### Step 2: Create GitHub Personal Access Token
 
@@ -40,17 +58,19 @@ Follow these steps to get a dynamic coverage badge in **under 5 minutes**:
    - Name: `GIST_TOKEN`, Value: (paste your token from step 2)
    - Name: `GIST_ID`, Value: (paste your gist ID from step 1)
 
-### Step 4: Update README Badge
+### Step 4: Update README Badges
 
-Replace the current coverage badge line in `README.md`:
+Replace the static badges in `README.md` with dynamic ones:
 
 **Current (static):**
 ```markdown
+[![Tests](https://img.shields.io/badge/tests-68%2F68%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)]()
 ```
 
 **New (dynamic):**
 ```markdown
+[![Tests](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yhsung/YOUR_GIST_ID/raw/test-badge.json)](https://github.com/yhsung/strider/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yhsung/YOUR_GIST_ID/raw/coverage-badge.json)](https://github.com/yhsung/strider/actions/workflows/ci.yml)
 ```
 

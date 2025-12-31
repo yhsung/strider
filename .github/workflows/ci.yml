@@ -47,12 +47,60 @@ jobs:
       run: cmake --build build --config ${{ matrix.build_type }} -j $(nproc)
 
     - name: Run tests
+      id: test_results
       working-directory: build
-      run: ctest --output-on-failure --build-config ${{ matrix.build_type }}
+      run: |
+        ctest --output-on-failure --build-config ${{ matrix.build_type }}
+
+        # Extract test counts for badge (only for GCC Debug)
+        if [ "${{ matrix.compiler }}" = "gcc" ] && [ "${{ matrix.build_type }}" = "Debug" ]; then
+          # Run ctest in quiet mode to get summary
+          SUMMARY=$(ctest --quiet 2>&1 || true)
+          TOTAL=$(echo "$SUMMARY" | grep -oP '\d+(?= tests)' | head -1 || echo "0")
+          PASSED=$(echo "$SUMMARY" | grep -oP '\d+(?= tests passed)' || echo "$TOTAL")
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "Test Results: $PASSED/$TOTAL tests passed"
+        fi
 
     - name: Run example
       working-directory: build
       run: ./examples/cpu_info
+
+    - name: Create test badge JSON
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.compiler == 'gcc' && matrix.build_type == 'Debug'
+      run: |
+        TOTAL="${{ steps.test_results.outputs.total }}"
+        PASSED="${{ steps.test_results.outputs.passed }}"
+
+        # Determine badge color
+        if [ "$PASSED" = "$TOTAL" ]; then
+          COLOR="brightgreen"
+        else
+          COLOR="red"
+        fi
+
+        # Create badge JSON
+        cat > test-badge.json <<EOF
+        {
+          "schemaVersion": 1,
+          "label": "tests",
+          "message": "${PASSED}/${TOTAL} passing",
+          "color": "${COLOR}"
+        }
+        EOF
+
+        cat test-badge.json
+
+    - name: Update test badge gist
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.compiler == 'gcc' && matrix.build_type == 'Debug'
+      uses: exuanbo/actions-deploy-gist@v1
+      with:
+        token: ${{ secrets.GIST_TOKEN }}
+        gist_id: ${{ secrets.GIST_ID }}
+        file_path: test-badge.json
+        file_type: text
+      continue-on-error: true
 
   # Test on Linux with sanitizers (GCC only for now)
   test-sanitizers:
