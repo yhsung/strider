@@ -31,7 +31,15 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake build-essential gcc clang valgrind lcov
+        sudo apt-get install -y ccache valgrind
+
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+        path: ~/.ccache
+        key: ccache-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ github.sha }}
+        restore-keys: |
+          ccache-${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}-
 
     - name: Configure CMake
       env:
@@ -40,6 +48,8 @@ jobs:
       run: |
         cmake -B build \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
           -DSTRIDER_BUILD_TESTS=ON \
           -DSTRIDER_BUILD_EXAMPLES=ON
 
@@ -110,11 +120,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake build-essential gcc
-
     - name: Configure with AddressSanitizer
       env:
         CC: gcc
@@ -157,9 +162,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: brew install cmake
-
     - name: Configure CMake
       run: |
         cmake -B build \
@@ -189,7 +191,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake build-essential gcc lcov
+        sudo apt-get install -y lcov
 
     - name: Configure with coverage
       env:
