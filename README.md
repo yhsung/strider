@@ -7,7 +7,7 @@ High-performance string log processing via SIMD abstraction.
 🚧 **Under Development** - TDD Phase 1: Foundation
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Tests](https://img.shields.io/badge/tests-3%2F3%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-10%2F10%20passing-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)]()
 
 ## Overview
@@ -70,7 +70,12 @@ See [DEVELOPMENT_PLAN.md](docs/plans/DEVELOPMENT_PLAN.md) for the complete 12-we
   - [x] Unity test framework
   - [x] Platform detection
   - [x] First 3 tests passing
-- [ ] TDD Cycle 2: SIMD Feature Detection
+- [x] TDD Cycle 2: SIMD Feature Detection
+  - [x] Runtime CPU feature detection (CPUID/hwcaps)
+  - [x] SSE2, AVX2, AVX-512 detection (x86_64)
+  - [x] NEON detection (ARM64)
+  - [x] Compile-time and runtime consistency
+  - [x] 7 additional tests passing (10 total)
 - [ ] TDD Cycle 3: Core Vector Abstraction - Load/Store
 - [ ] TDD Cycle 4: Vector Comparison Operations
 - [ ] TDD Cycle 5: Memory Utilities

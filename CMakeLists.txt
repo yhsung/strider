@@ -36,15 +36,15 @@ elseif(STRIDER_ARCH_ARM64)
     endif()
 endif()
 
-# Header-only library
-add_library(strider INTERFACE)
-target_include_directories(strider INTERFACE
+# Library (header-only interface + runtime detection implementation)
+add_library(strider src/config.c)
+target_include_directories(strider PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 
 # Apply SIMD flags to targets that use strider
-target_compile_options(strider INTERFACE ${STRIDER_SIMD_FLAGS})
+target_compile_options(strider PUBLIC ${STRIDER_SIMD_FLAGS})
 
 # Enable testing
 if(STRIDER_BUILD_TESTS)

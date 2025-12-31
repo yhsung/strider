@@ -24,3 +24,6 @@ endfunction()
 
 # TDD Cycle 1: First test - build system works
 add_strider_test(test_build test_build.c)
+
+# TDD Cycle 2: SIMD feature detection
+add_strider_test(test_simd_detection test_simd_detection.c)
