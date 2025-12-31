@@ -7,7 +7,7 @@ High-performance string log processing via SIMD abstraction.
 🚧 **Under Development** - TDD Phase 2: String Search Primitives 🚀
 
 [![CI](https://github.com/yhsung/strider/workflows/CI/badge.svg)](https://github.com/yhsung/strider/actions)
-[![Tests](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yhsung/ca03a25b7edf3adbb2e09205eda4e220/raw/test-badge.json)](https://github.com/yhsung/strider/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yhsung/356a6310a6237e59d91de7cd1d599dcc/raw/test-badge.json)](https://github.com/yhsung/strider/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yhsung/356a6310a6237e59d91de7cd1d599dcc/raw/coverage-badge.json)](https://github.com/yhsung/strider/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
