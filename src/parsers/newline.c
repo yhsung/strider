@@ -117,8 +117,10 @@ size_t strider_count_newlines_simd(const char *data, size_t size) {
                         }
                     } else {
                         /* \r is at end of vector, check next byte */
-                        if (size > 32 && ptr[32] == '\n') {
-                            continue; /* Will be counted when we process next vector */
+                        if (size > 32) {
+                            if (ptr[32] == '\n') {
+                                continue; /* Will be counted when we process next vector */
+                            }
                         }
                     }
                     count++;
@@ -158,8 +160,10 @@ size_t strider_count_newlines_simd(const char *data, size_t size) {
                             continue; /* \r\n pair */
                         }
                     } else {
-                        if (size > 16 && ptr[16] == '\n') {
-                            continue;
+                        if (size > 16) {
+                            if (ptr[16] == '\n') {
+                                continue;
+                            }
                         }
                     }
                     count++;
