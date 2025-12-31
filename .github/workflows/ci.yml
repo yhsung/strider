@@ -355,10 +355,10 @@ jobs:
 
     - name: Configure CMake
       run: |
-        cmake -B build \
-          -G "Visual Studio 17 2022" \
-          -A x64 \
-          -DSTRIDER_BUILD_TESTS=ON \
+        cmake -B build `
+          -G "Visual Studio 17 2022" `
+          -A x64 `
+          -DSTRIDER_BUILD_TESTS=ON `
           -DSTRIDER_BUILD_EXAMPLES=ON
 
     - name: Build
