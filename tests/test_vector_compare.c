@@ -14,8 +14,14 @@
 #include <string.h>
 
 /* Test data buffers */
-static uint8_t test_data_a[32] __attribute__((aligned(32)));
-static uint8_t test_data_b[32] __attribute__((aligned(32)));
+#if defined(_MSC_VER)
+    #define ALIGN_32 __declspec(align(32))
+#else
+    #define ALIGN_32 __attribute__((aligned(32)))
+#endif
+
+static ALIGN_32 uint8_t test_data_a[32];
+static ALIGN_32 uint8_t test_data_b[32];
 
 void setUp(void) {
     /* Initialize test data */

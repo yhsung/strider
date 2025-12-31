@@ -17,7 +17,11 @@
 #include <stdlib.h>
 
 /* Test data aligned to 32 bytes (safe for AVX2) */
-#define ALIGN_32 __attribute__((aligned(32)))
+#if defined(_MSC_VER)
+    #define ALIGN_32 __declspec(align(32))
+#else
+    #define ALIGN_32 __attribute__((aligned(32)))
+#endif
 
 static ALIGN_32 uint8_t test_data_aligned[32] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,

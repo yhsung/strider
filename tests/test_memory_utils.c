@@ -125,7 +125,11 @@ void test_aligned_memory_readwrite(void) {
  */
 void test_is_aligned(void) {
     /* Stack variables have platform-specific alignment */
-    uint8_t buffer[64] __attribute__((aligned(64)));
+    #if defined(_MSC_VER)
+        __declspec(align(64)) uint8_t buffer[64];
+    #else
+        uint8_t buffer[64] __attribute__((aligned(64)));
+    #endif
 
     TEST_ASSERT_TRUE(strider_is_aligned(buffer, 1));
     TEST_ASSERT_TRUE(strider_is_aligned(buffer, 2));
