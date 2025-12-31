@@ -36,3 +36,6 @@ add_strider_test(test_vector_compare test_vector_compare.c)
 
 # TDD Cycle 5: Memory utilities
 add_strider_test(test_memory_utils test_memory_utils.c)
+
+# TDD Cycle 6: Single character search
+add_strider_test(test_strchr test_strchr.c)

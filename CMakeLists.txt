@@ -37,7 +37,10 @@ elseif(STRIDER_ARCH_ARM64)
 endif()
 
 # Library (header-only interface + runtime detection implementation)
-add_library(strider src/config.c)
+add_library(strider
+    src/config.c
+    src/parsers/strchr.c
+)
 target_include_directories(strider PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>

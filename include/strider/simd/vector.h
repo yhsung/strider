@@ -20,6 +20,7 @@
 #define STRIDER_SIMD_VECTOR_H
 
 #include "strider/config.h"
+#include "strider/utils/memory.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -459,16 +460,7 @@ static inline int strider_popcount32(uint32_t x) {
  * Utility Functions
  * ======================================================================== */
 
-/**
- * @brief Check if pointer is aligned to specified boundary
- *
- * @param ptr Pointer to check
- * @param alignment Required alignment in bytes (must be power of 2)
- * @return true if aligned, false otherwise
- */
-static inline bool strider_is_aligned(const void *ptr, size_t alignment) {
-    return ((uintptr_t) ptr & (alignment - 1)) == 0;
-}
+/* Note: strider_is_aligned() is defined in strider/utils/memory.h */
 
 #ifdef __cplusplus
 }
