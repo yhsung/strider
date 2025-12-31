@@ -2382,7 +2382,7 @@ void UnityPopDetail(UNITY_DETAIL_LABEL_TYPE label, UNITY_DETAIL_VALUE_TYPE value
         UnityPrint(UnityStrErrDetailStackPop);
         UnityAddMsgIfSpecified(NULL);
         UNITY_FAIL_AND_BAIL;
-    }   
+    }
     Unity.CurrentDetailStackSize--;
 }
 #endif
