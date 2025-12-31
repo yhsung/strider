@@ -80,6 +80,12 @@ size_t strider_count_newlines_simd(const char *data, size_t size) {
 
     if (prefix_len > 0 && prefix_len < size) {
         count += strider_count_newlines((const char *) ptr, prefix_len);
+
+        /* Check if we split a \r\n pair across the boundary */
+        if (ptr[prefix_len - 1] == '\r' && ptr[prefix_len] == '\n') {
+            count--;
+        }
+
         ptr += prefix_len;
         size -= prefix_len;
     }
