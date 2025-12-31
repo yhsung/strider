@@ -33,3 +33,6 @@ add_strider_test(test_vector_ops test_vector_ops.c)
 
 # TDD Cycle 4: Vector comparison operations
 add_strider_test(test_vector_compare test_vector_compare.c)
+
+# TDD Cycle 5: Memory utilities
+add_strider_test(test_memory_utils test_memory_utils.c)
