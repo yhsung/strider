@@ -18,8 +18,8 @@
 #define STRIDER_UTILS_MEMORY_H
 
 #include "strider/config.h"
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -41,22 +41,22 @@ extern "C" {
  * @note Use strider_aligned_free() to deallocate
  * @note Alignment must be power of 2 and >= sizeof(void*)
  */
-static inline void* strider_aligned_alloc(size_t alignment, size_t size) {
-    #if defined(_MSC_VER)
-        return _aligned_malloc(size, alignment);
-    #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
-        /* C11 aligned_alloc */
-        /* Note: C11 requires size to be multiple of alignment */
-        size_t aligned_size = (size + alignment - 1) & ~(alignment - 1);
-        return aligned_alloc(alignment, aligned_size);
-    #else
-        /* POSIX posix_memalign */
-        void* ptr = NULL;
-        if (posix_memalign(&ptr, alignment, size) == 0) {
-            return ptr;
-        }
-        return NULL;
-    #endif
+static inline void *strider_aligned_alloc(size_t alignment, size_t size) {
+#if defined(_MSC_VER)
+    return _aligned_malloc(size, alignment);
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    /* C11 aligned_alloc */
+    /* Note: C11 requires size to be multiple of alignment */
+    size_t aligned_size = (size + alignment - 1) & ~(alignment - 1);
+    return aligned_alloc(alignment, aligned_size);
+#else
+    /* POSIX posix_memalign */
+    void *ptr = NULL;
+    if (posix_memalign(&ptr, alignment, size) == 0) {
+        return ptr;
+    }
+    return NULL;
+#endif
 }
 
 /**
@@ -66,16 +66,16 @@ static inline void* strider_aligned_alloc(size_t alignment, size_t size) {
  *
  * @note Safe to call with NULL pointer
  */
-static inline void strider_aligned_free(void* ptr) {
+static inline void strider_aligned_free(void *ptr) {
     if (ptr == NULL) {
         return;
     }
 
-    #if defined(_MSC_VER)
-        _aligned_free(ptr);
-    #else
-        free(ptr);
-    #endif
+#if defined(_MSC_VER)
+    _aligned_free(ptr);
+#else
+    free(ptr);
+#endif
 }
 
 /**
@@ -85,8 +85,8 @@ static inline void strider_aligned_free(void* ptr) {
  * @param alignment Required alignment in bytes (must be power of 2)
  * @return true if aligned, false otherwise
  */
-static inline bool strider_is_aligned(const void* ptr, size_t alignment) {
-    return ((uintptr_t)ptr & (alignment - 1)) == 0;
+static inline bool strider_is_aligned(const void *ptr, size_t alignment) {
+    return ((uintptr_t) ptr & (alignment - 1)) == 0;
 }
 
 /* ========================================================================
@@ -100,8 +100,8 @@ static inline bool strider_is_aligned(const void* ptr, size_t alignment) {
  * access to existing memory without ownership.
  */
 typedef struct {
-    const uint8_t* data;  /**< Pointer to buffer start */
-    size_t size;          /**< Size of buffer in bytes */
+    const uint8_t *data; /**< Pointer to buffer start */
+    size_t size;         /**< Size of buffer in bytes */
 } strider_buffer_view_t;
 
 /**
@@ -113,9 +113,9 @@ typedef struct {
  *
  * @note Does not copy or take ownership of data
  */
-static inline strider_buffer_view_t strider_buffer_view_create(const void* data, size_t size) {
+static inline strider_buffer_view_t strider_buffer_view_create(const void *data, size_t size) {
     strider_buffer_view_t view;
-    view.data = (const uint8_t*)data;
+    view.data = (const uint8_t *) data;
     view.size = size;
     return view;
 }
@@ -128,7 +128,7 @@ static inline strider_buffer_view_t strider_buffer_view_create(const void* data,
  *
  * @note Uses strlen(), so str must be null-terminated
  */
-static inline strider_buffer_view_t strider_buffer_view_from_cstr(const char* str) {
+static inline strider_buffer_view_t strider_buffer_view_from_cstr(const char *str) {
     return strider_buffer_view_create(str, strlen(str));
 }
 
@@ -152,11 +152,8 @@ static inline bool strider_buffer_view_is_empty(strider_buffer_view_t view) {
  *
  * @note Does not validate bounds - caller must ensure offset + length <= view.size
  */
-static inline strider_buffer_view_t strider_buffer_view_slice(
-    strider_buffer_view_t view,
-    size_t offset,
-    size_t length
-) {
+static inline strider_buffer_view_t strider_buffer_view_slice(strider_buffer_view_t view,
+                                                              size_t offset, size_t length) {
     strider_buffer_view_t slice;
     slice.data = view.data + offset;
     slice.size = length;
@@ -170,10 +167,7 @@ static inline strider_buffer_view_t strider_buffer_view_slice(
  * @param b Second view
  * @return true if contents are identical, false otherwise
  */
-static inline bool strider_buffer_view_equals(
-    strider_buffer_view_t a,
-    strider_buffer_view_t b
-) {
+static inline bool strider_buffer_view_equals(strider_buffer_view_t a, strider_buffer_view_t b) {
     if (a.size != b.size) {
         return false;
     }

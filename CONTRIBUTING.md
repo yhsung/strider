@@ -61,6 +61,18 @@ ctest --output-on-failure
 
 ### 3. Code Style
 
+**Automated Formatting:**
+```bash
+# Format all code automatically
+./scripts/format-code.sh
+
+# Check formatting without changing files
+./scripts/format-code.sh --check
+```
+
+We use `clang-format` for consistent code formatting. Configuration is in `.clang-format`.
+
+**Style Guidelines:**
 - **C Standard**: C11
 - **Indentation**: 4 spaces (no tabs in source files)
 - **Line length**: 100 characters recommended
@@ -70,6 +82,7 @@ ctest --output-on-failure
   - Macros: `STRIDER_UPPER_CASE`
 - **Comments**: Use `/* */` for multi-line, `//` for single-line
 - **Documentation**: Every public API must have Doxygen comments
+- **Formatting**: Run `./scripts/format-code.sh` before committing
 
 ### 4. Commit Messages
 

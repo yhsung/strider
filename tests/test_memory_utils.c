@@ -9,8 +9,8 @@
  * Tests aligned allocation, deallocation, and buffer view helpers.
  */
 
-#include "unity.h"
 #include "strider/utils/memory.h"
+#include "unity.h"
 #include <string.h>
 
 void setUp(void) {
@@ -30,7 +30,7 @@ void tearDown(void) {
  */
 void test_aligned_alloc_16(void) {
     size_t size = 64;
-    void* ptr = strider_aligned_alloc(16, size);
+    void *ptr = strider_aligned_alloc(16, size);
 
     TEST_ASSERT_NOT_NULL(ptr);
     TEST_ASSERT_TRUE(strider_is_aligned(ptr, 16));
@@ -47,7 +47,7 @@ void test_aligned_alloc_16(void) {
  */
 void test_aligned_alloc_32(void) {
     size_t size = 128;
-    void* ptr = strider_aligned_alloc(32, size);
+    void *ptr = strider_aligned_alloc(32, size);
 
     TEST_ASSERT_NOT_NULL(ptr);
     TEST_ASSERT_TRUE(strider_is_aligned(ptr, 32));
@@ -61,7 +61,7 @@ void test_aligned_alloc_32(void) {
  */
 void test_aligned_alloc_64(void) {
     size_t size = 256;
-    void* ptr = strider_aligned_alloc(64, size);
+    void *ptr = strider_aligned_alloc(64, size);
 
     TEST_ASSERT_NOT_NULL(ptr);
     TEST_ASSERT_TRUE(strider_is_aligned(ptr, 64));
@@ -75,9 +75,9 @@ void test_aligned_alloc_64(void) {
  * Test: Free aligned memory (should not crash)
  */
 void test_aligned_free(void) {
-    void* ptr1 = strider_aligned_alloc(16, 64);
-    void* ptr2 = strider_aligned_alloc(32, 128);
-    void* ptr3 = strider_aligned_alloc(64, 256);
+    void *ptr1 = strider_aligned_alloc(16, 64);
+    void *ptr2 = strider_aligned_alloc(32, 128);
+    void *ptr3 = strider_aligned_alloc(64, 256);
 
     TEST_ASSERT_NOT_NULL(ptr1);
     TEST_ASSERT_NOT_NULL(ptr2);
@@ -99,18 +99,18 @@ void test_aligned_free(void) {
  */
 void test_aligned_memory_readwrite(void) {
     size_t size = 64;
-    uint8_t* ptr = (uint8_t*)strider_aligned_alloc(32, size);
+    uint8_t *ptr = (uint8_t *) strider_aligned_alloc(32, size);
 
     TEST_ASSERT_NOT_NULL(ptr);
 
     /* Write pattern */
     for (size_t i = 0; i < size; i++) {
-        ptr[i] = (uint8_t)i;
+        ptr[i] = (uint8_t) i;
     }
 
     /* Verify pattern */
     for (size_t i = 0; i < size; i++) {
-        TEST_ASSERT_EQUAL_UINT8((uint8_t)i, ptr[i]);
+        TEST_ASSERT_EQUAL_UINT8((uint8_t) i, ptr[i]);
     }
 
     strider_aligned_free(ptr);
@@ -124,12 +124,12 @@ void test_aligned_memory_readwrite(void) {
  * Test: Check alignment validation
  */
 void test_is_aligned(void) {
-    /* Stack variables have platform-specific alignment */
-    #if defined(_MSC_VER)
-        __declspec(align(64)) uint8_t buffer[64];
-    #else
-        uint8_t buffer[64] __attribute__((aligned(64)));
-    #endif
+/* Stack variables have platform-specific alignment */
+#if defined(_MSC_VER)
+    __declspec(align(64)) uint8_t buffer[64];
+#else
+    uint8_t buffer[64] __attribute__((aligned(64)));
+#endif
 
     TEST_ASSERT_TRUE(strider_is_aligned(buffer, 1));
     TEST_ASSERT_TRUE(strider_is_aligned(buffer, 2));
@@ -154,7 +154,7 @@ void test_is_aligned(void) {
  * Test: Create buffer view from memory
  */
 void test_buffer_view_create(void) {
-    const char* test_str = "Hello, SIMD world!";
+    const char *test_str = "Hello, SIMD world!";
     size_t len = strlen(test_str);
 
     strider_buffer_view_t view = strider_buffer_view_create(test_str, len);
@@ -167,7 +167,7 @@ void test_buffer_view_create(void) {
  * Test: Create buffer view from C string
  */
 void test_buffer_view_from_cstr(void) {
-    const char* test_str = "Test string";
+    const char *test_str = "Test string";
 
     strider_buffer_view_t view = strider_buffer_view_from_cstr(test_str);
 
@@ -190,7 +190,7 @@ void test_buffer_view_empty(void) {
  * Test: Non-empty buffer view
  */
 void test_buffer_view_not_empty(void) {
-    const char* test_str = "X";
+    const char *test_str = "X";
     strider_buffer_view_t view = strider_buffer_view_from_cstr(test_str);
 
     TEST_ASSERT_FALSE(strider_buffer_view_is_empty(view));
@@ -200,7 +200,7 @@ void test_buffer_view_not_empty(void) {
  * Test: Buffer view slicing
  */
 void test_buffer_view_slice(void) {
-    const char* test_str = "0123456789";
+    const char *test_str = "0123456789";
     strider_buffer_view_t view = strider_buffer_view_from_cstr(test_str);
 
     /* Slice middle portion: "23456" */
@@ -218,7 +218,7 @@ void test_buffer_view_slice(void) {
  * Test: Buffer view slicing at boundaries
  */
 void test_buffer_view_slice_boundaries(void) {
-    const char* test_str = "ABCDEF";
+    const char *test_str = "ABCDEF";
     strider_buffer_view_t view = strider_buffer_view_from_cstr(test_str);
 
     /* Slice from start */

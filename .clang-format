@@ -1,0 +1,68 @@
+---
+# Strider C Code Style Configuration
+# Based on LLVM style with customizations for embedded/systems C
+
+BasedOnStyle: LLVM
+
+# Language and standard
+Language: Cpp
+Standard: c++11
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+IndentCaseLabels: true
+IndentPPDirectives: AfterHash
+
+# Line length
+ColumnLimit: 100
+
+# Braces
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: false
+  AfterControlStatement: Never
+  AfterStruct: false
+  AfterEnum: false
+  BeforeElse: false
+  IndentBraces: false
+
+# Spacing
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Alignment
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: true
+AlignTrailingComments: true
+
+# Pointers and references
+PointerAlignment: Right
+DerivePointerAlignment: false
+
+# Function calls and declarations
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BinPackArguments: true
+BinPackParameters: true
+
+# Comments
+ReflowComments: true
+SpacesBeforeTrailingComments: 2
+
+# Includes
+SortIncludes: true
+IncludeBlocks: Preserve
+
+# Other
+MaxEmptyLinesToKeep: 2
+KeepEmptyLinesAtTheStartOfBlocks: false

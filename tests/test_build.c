@@ -41,11 +41,11 @@ void test_c_standard(void) {
  * Expected: At least one architecture is detected
  */
 void test_platform_detection(void) {
-    #if defined(__x86_64__) || defined(__aarch64__) || defined(_M_X64) || defined(_M_ARM64)
-        TEST_PASS_MESSAGE("Platform detected");
-    #else
-        TEST_FAIL_MESSAGE("Unknown platform");
-    #endif
+#if defined(__x86_64__) || defined(__aarch64__) || defined(_M_X64) || defined(_M_ARM64)
+    TEST_PASS_MESSAGE("Platform detected");
+#else
+    TEST_FAIL_MESSAGE("Unknown platform");
+#endif
 }
 
 int main(void) {

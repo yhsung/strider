@@ -9,15 +9,15 @@
  * Tests equality comparisons, movemask extraction, and byte searching.
  */
 
-#include "unity.h"
 #include "strider/simd/vector.h"
+#include "unity.h"
 #include <string.h>
 
 /* Test data buffers */
 #if defined(_MSC_VER)
-    #define ALIGN_32 __declspec(align(32))
+#    define ALIGN_32 __declspec(align(32))
 #else
-    #define ALIGN_32 __attribute__((aligned(32)))
+#    define ALIGN_32 __attribute__((aligned(32)))
 #endif
 
 static ALIGN_32 uint8_t test_data_a[32];
@@ -131,7 +131,7 @@ void test_vec128_movemask_pattern(void) {
     uint32_t mask = strider_vec128_movemask(vec);
 
     /* Bits should be set for even positions (0, 2, 4, ..., 14) */
-    uint32_t expected = 0x5555;  /* 0101010101010101 in binary */
+    uint32_t expected = 0x5555; /* 0101010101010101 in binary */
     TEST_ASSERT_EQUAL_UINT32(expected, mask);
 }
 
@@ -194,9 +194,9 @@ void test_vec256_movemask_zeros(void) {
  */
 void test_count_trailing_zeros(void) {
     /* Test various bit patterns */
-    TEST_ASSERT_EQUAL_INT(0, strider_ctz32(1));      /* ...0001 */
-    TEST_ASSERT_EQUAL_INT(3, strider_ctz32(8));      /* ...1000 */
-    TEST_ASSERT_EQUAL_INT(7, strider_ctz32(128));    /* ...10000000 */
+    TEST_ASSERT_EQUAL_INT(0, strider_ctz32(1));   /* ...0001 */
+    TEST_ASSERT_EQUAL_INT(3, strider_ctz32(8));   /* ...1000 */
+    TEST_ASSERT_EQUAL_INT(7, strider_ctz32(128)); /* ...10000000 */
     TEST_ASSERT_EQUAL_INT(15, strider_ctz32(1 << 15));
 }
 
@@ -215,8 +215,8 @@ void test_count_trailing_zeros_zero(void) {
 void test_popcount(void) {
     TEST_ASSERT_EQUAL_INT(0, strider_popcount32(0));
     TEST_ASSERT_EQUAL_INT(1, strider_popcount32(1));
-    TEST_ASSERT_EQUAL_INT(2, strider_popcount32(3));     /* 0b11 */
-    TEST_ASSERT_EQUAL_INT(4, strider_popcount32(15));    /* 0b1111 */
+    TEST_ASSERT_EQUAL_INT(2, strider_popcount32(3));  /* 0b11 */
+    TEST_ASSERT_EQUAL_INT(4, strider_popcount32(15)); /* 0b1111 */
     TEST_ASSERT_EQUAL_INT(16, strider_popcount32(0xFFFF));
     TEST_ASSERT_EQUAL_INT(32, strider_popcount32(0xFFFFFFFF));
 }
@@ -236,12 +236,12 @@ int main(void) {
     RUN_TEST(test_vec128_movemask_all_zeros);
     RUN_TEST(test_vec128_movemask_pattern);
 
-    /* 256-bit comparison tests (AVX2 only) */
-    #if defined(STRIDER_HAS_AVX2)
-        RUN_TEST(test_vec256_cmpeq_equal_vectors);
-        RUN_TEST(test_vec256_find_byte);
-        RUN_TEST(test_vec256_movemask_zeros);
-    #endif
+/* 256-bit comparison tests (AVX2 only) */
+#if defined(STRIDER_HAS_AVX2)
+    RUN_TEST(test_vec256_cmpeq_equal_vectors);
+    RUN_TEST(test_vec256_find_byte);
+    RUN_TEST(test_vec256_movemask_zeros);
+#endif
 
     /* Utility tests */
     RUN_TEST(test_count_trailing_zeros);
