@@ -50,14 +50,14 @@ jobs:
       id: test_results
       working-directory: build
       run: |
-        ctest --output-on-failure --build-config ${{ matrix.build_type }}
+        # Run tests and generate JUnit XML for parsing
+        ctest --output-on-failure --build-config ${{ matrix.build_type }} --output-junit test_results.xml
 
         # Extract test counts for badge (only for GCC Debug)
         if [ "${{ matrix.compiler }}" = "gcc" ] && [ "${{ matrix.build_type }}" = "Debug" ]; then
-          # Run ctest in quiet mode to get summary
-          SUMMARY=$(ctest --quiet 2>&1 || true)
-          TOTAL=$(echo "$SUMMARY" | grep -oP '\d+(?= tests)' | head -1 || echo "0")
-          PASSED=$(echo "$SUMMARY" | grep -oP '\d+(?= tests passed)' || echo "$TOTAL")
+          TOTAL=$(sed -n 's/.*tests="\([0-9]*\)".*/\1/p' test_results.xml | head -n 1)
+          FAILURES=$(sed -n 's/.*failures="\([0-9]*\)".*/\1/p' test_results.xml | head -n 1)
+          PASSED=$((TOTAL - FAILURES))
           echo "total=$TOTAL" >> $GITHUB_OUTPUT
           echo "passed=$PASSED" >> $GITHUB_OUTPUT
           echo "Test Results: $PASSED/$TOTAL tests passed"
